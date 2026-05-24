@@ -10,10 +10,6 @@
         android:tag="audio"
         android:label="@string/attribution_audio" />
 
-    <attribution
-        android:tag="@string/empty_string"
-        android:label="@string/attribution_audio" />
-
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
