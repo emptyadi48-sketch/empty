@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Outer energy ring -->
+    <path
+        android:pathData="M 54,24 A 30,30 0 1,1 53.99,24 Z"
+        android:strokeWidth="2"
+        android:strokeLineCap="round">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:type="linear"
+                android:startX="24"
+                android:startY="24"
+                android:endX="84"
+                android:endY="84">
+                <item android:color="#FF6B35" android:offset="0.0"/>
+                <item android:color="#7C3AED" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Star/Delta flyer representing dragon flight -->
+    <!-- Centered carefully inside the 66dp safe-zone boundary (around coordinates 54,54) -->
+    <path
+        android:pathData="M54,34 L66,56 L54,50 L42,56 Z"
+        android:strokeWidth="1">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="42"
+                android:startY="34"
+                android:endX="66"
+                android:endY="56">
+                <item android:color="#FFD23F" android:offset="0.0"/>
+                <item android:color="#FF6B35" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Wing Flaps styling curves left -->
+    <path
+        android:pathData="M38,44 C26,48 34,64 54,58"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:type="linear"
+                android:startX="26"
+                android:startY="44"
+                android:endX="54"
+                android:endY="58">
+                <item android:color="#FF6B35" android:offset="0.0"/>
+                <item android:color="#7C3AED" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Wing Flaps styling curves right -->
+    <path
+        android:pathData="M70,44 C82,48 74,64 54,58"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:type="linear"
+                android:startX="70"
+                android:startY="44"
+                android:endX="54"
+                android:endY="58">
+                <item android:color="#FF6B35" android:offset="0.0"/>
+                <item android:color="#7C3AED" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Tiny Head piece glow -->
+    <path
+        android:fillColor="#06FFA5"
+        android:pathData="M54,30 A2,2 0 1,1 53.99,30 Z" />
+
+</vector>

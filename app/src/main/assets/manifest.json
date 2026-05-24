@@ -1,0 +1,16 @@
+{
+  "name": "Infinity Flyer",
+  "short_name": "InfinityFlyer",
+  "start_url": "index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06030f",
+  "theme_color": "#7c3aed",
+  "icons": [
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

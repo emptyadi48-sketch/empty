@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Infinity Flyer",
+  "description": "An endless flapper dragon flight game with beautiful glassmospheric menus, retro procedural synth audio, and progressive challenges.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

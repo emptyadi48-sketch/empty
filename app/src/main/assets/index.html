@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Infinity Flyer</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#7c3aed" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  
+  <!-- Font Families -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Root Container matching Portrait Viewport -->
+  <div id="app-container">
+    
+    <!-- Background Canvas for Game Rendering -->
+    <canvas id="gameCanvas"></canvas>
+    
+    <!-- ================= SCREEN 1: LOGIN SCREEN ================= -->
+    <div id="screen-login" class="screen active">
+      <div class="logo-container">
+        <span class="floating-dragon">🐉</span>
+      </div>
+      <h1 class="gradient-text title-large">INFINITY FLYER</h1>
+      <p class="subtitle">Fly &bull; Collect &bull; Conquer</p>
+      
+      <div class="social-login-grid">
+        <button class="social-btn google" onclick="Auth.loginRequest('google')">
+          <span class="icon">G</span> Google
+        </button>
+        <button class="social-btn facebook" onclick="Auth.loginRequest('facebook')">
+          <span class="icon">f</span> Facebook
+        </button>
+        <button class="social-btn discord" onclick="Auth.loginRequest('discord')">
+          <span class="icon">⌘</span> Discord
+        </button>
+        <button class="social-btn telegram" onclick="Auth.loginRequest('telegram')">
+          <span class="icon">✈</span> Telegram
+        </button>
+        <button class="social-btn instagram" onclick="Auth.loginRequest('instagram')">
+          <span class="icon">◉</span> Instagram
+        </button>
+        <button class="social-btn snapchat" onclick="Auth.loginRequest('snapchat')">
+          <span class="icon">👻</span> Snapchat
+        </button>
+        <button class="social-btn guest" onclick="Auth.loginRequest('guest')">
+          <span class="icon">👤</span> Guest Mode
+        </button>
+      </div>
+    </div>
+
+    <!-- AVATAR / PROFILE CREATION DIALOG -->
+    <div id="modal-avatar" class="modal-overlay hidden">
+      <div class="modal-content glass">
+        <h3>Create Your Character</h3>
+        <input type="text" id="username-input" class="modern-input" placeholder="Enter Display Name" maxlength="15">
+        
+        <p class="modal-sub">Pick your starting avatar emoji:</p>
+        <div class="avatar-grid" id="avatar-picker-grid">
+          <!-- Populated by JS -->
+        </div>
+        
+        <div class="modal-actions">
+          <button class="btn btn-primary" onclick="Auth.confirmProfile()">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SCREEN 2: MAIN MENU ================= -->
+    <div id="screen-menu" class="screen hidden">
+      <!-- Player Profile Strip -->
+      <div class="player-strip glass">
+        <div class="strip-left">
+          <span class="player-avatar" id="menu-avatar">🐉</span>
+          <div class="player-details">
+            <span class="player-name" id="menu-name">Pilot</span>
+            <span class="player-platform" id="menu-platform">Guest</span>
+          </div>
+        </div>
+        <div class="strip-right">
+          <span class="strip-coins">🪙 <span id="menu-coins">0</span></span>
+          <span class="strip-rank">Rank: <span id="menu-rank">#21</span></span>
+        </div>
+      </div>
+
+      <!-- Floating center logo -->
+      <div class="menu-brand">
+        <span class="spinning-brand-icon" id="menu-brand-skin">🐉</span>
+        <h1 class="gradient-text title-medium">INFINITY FLYER</h1>
+      </div>
+
+      <!-- Stats Overview Row -->
+      <div class="stats-row grid-3">
+        <div class="stat-card glass">
+          <span class="stat-num" id="stat-best">0</span>
+          <span class="stat-lbl">Best Score</span>
+        </div>
+        <div class="stat-card glass">
+          <span class="stat-num" id="stat-level">1</span>
+          <span class="stat-lbl">Max Level</span>
+        </div>
+        <div class="stat-card glass">
+          <span class="stat-num" id="stat-total-coins">0</span>
+          <span class="stat-lbl">Total Coins</span>
+        </div>
+      </div>
+
+      <!-- Main Action -->
+      <div class="menu-actions">
+        <button class="btn btn-big-orange" id="btn-play">PLAY GAME</button>
+        <button class="btn btn-daily glass" id="btn-daily-bonus" onclick="Game.claimDailyBonus()">
+          🎁 Claim Daily Bonus
+        </button>
+      </div>
+
+      <!-- Grid of Sub Menu Actions -->
+      <div class="menu-grid">
+        <button class="menu-grid-btn glass" onclick="UI.showScreen('leaderboard')">
+          <span class="icon-sub">🏆</span> Leaderboard
+        </button>
+        <button class="menu-grid-btn glass" onclick="UI.showScreen('shop')">
+          <span class="icon-sub">🛍️</span> Shop
+        </button>
+        <button class="menu-grid-btn glass" onclick="UI.showScreen('achievements')">
+          <span class="icon-sub">🏅</span> Achievements
+        </button>
+        <button class="menu-grid-btn glass" onclick="UI.showScreen('howto')">
+          <span class="icon-sub">❓</span> How to Play
+        </button>
+        <button class="menu-grid-btn glass" id="btn-mute" onclick="Audio.toggleMute()">
+          <span class="icon-sub" id="mute-icon">🔊</span> Music On
+        </button>
+        <button class="menu-grid-btn glass" onclick="Auth.logout()">
+          <span class="icon-sub">🚪</span> Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- ================= SCREEN 3: READY SCREEN ================= -->
+    <div id="screen-ready" class="screen hidden">
+      <div class="ready-container">
+        <div class="level-badge" id="ready-level-badge">LEVEL 1</div>
+        <div class="countdown-circle">
+          <span id="ready-countdown">3</span>
+        </div>
+        <div class="ready-tip-box glass">
+          <span class="tip-title">PRO TIP</span>
+          <p id="ready-tip-text">Just get used to tapping.</p>
+        </div>
+        <div class="active-powerups-strip" id="ready-powerups">
+          <!-- Dynamic powerup status -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SCREEN 4: GAMEPLAY OVERLAYS ================= -->
+    <div id="screen-hud" class="screen-hud hidden">
+      <!-- HUD Top Row -->
+      <div class="hud-top">
+        <div class="hud-left glass-hud">
+          <div class="hud-label-val">Score: <span id="hud-score">0</span></div>
+          <div class="hud-label-val">Level: <span id="hud-level">1</span></div>
+        </div>
+        
+        <!-- Pause Button in top center -->
+        <button class="hud-pause-btn glass-hud" onclick="Game.pauseGame()">⏸</button>
+        
+        <div class="hud-right glass-hud">
+          <div class="hud-label-val">🪙 <span id="hud-coins">0</span></div>
+          <div id="hud-powerups-active"></div>
+        </div>
+      </div>
+
+      <!-- Combo Indicator -->
+      <div id="hud-combo-badge" class="combo-badge hidden">
+        COMBO x<span id="hud-combo">3</span>
+      </div>
+
+      <!-- Wind Indicator (Level 6+) -->
+      <div id="hud-wind-indicator" class="wind-indicator hidden">
+        Wind: <span id="wind-arrow">&rarr;</span>
+      </div>
+
+      <!-- Powerup Quick-Use Triggers -->
+      <div id="hud-powerup-triggers" class="hud-powerup-triggers"></div>
+
+      <!-- Progress bar at bottom -->
+      <div class="hud-bottom">
+        <div class="progress-container glass-hud">
+          <div class="progress-bar-fill" id="hud-progress" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SCREEN 5: PAUSE SCREEN ================= -->
+    <div id="screen-pause" class="screen hidden">
+      <div class="pause-box glass text-center">
+        <h2>GAME PAUSED</h2>
+        <div class="stat-display-large">
+          <span>Score: <span id="pause-score">0</span></span>
+        </div>
+        <div class="vertical-actions">
+          <button class="btn btn-primary" onclick="Game.resumeGame()">Resume</button>
+          <button class="btn btn-secondary" onclick="Game.quitToMenu()">Exit to Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SCREEN 6: LEVEL COMPLETE SCREEN ================= -->
+    <div id="screen-complete" class="screen hidden">
+      <div class="complete-box glass text-center">
+        <div class="success-header">🎉 LEVEL COMPLETE! 🎉</div>
+        
+        <div class="stars-container" id="complete-stars">
+          <span class="star-complete">⭐</span>
+          <span class="star-complete">⭐</span>
+          <span class="star-complete">⭐</span>
+        </div>
+
+        <div class="rewards-box">
+          <h4>LEVEL REWARDS</h4>
+          <div class="rewards-flow">
+            <span class="reward-pill">🪙 +<span id="complete-reward-coins">0</span></span>
+            <span class="reward-pill">💎 +<span id="complete-reward-gems">0</span></span>
+          </div>
+        </div>
+
+        <div class="preview-box">
+          <p class="preview-lbl">Next Level Mode</p>
+          <p id="complete-next-mode" class="preview-content">Wind & High Speed</p>
+        </div>
+
+        <div class="vertical-actions">
+          <button class="btn btn-big-orange" onclick="Game.advanceToNextLevel()">Next Level &rarr;</button>
+          <button class="btn btn-secondary" onclick="Game.quitToMenu()">Main Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SCREEN 7: GAME OVER SCREEN ================= -->
+    <div id="screen-gameover" class="screen hidden">
+      <div class="gameover-box glass text-center">
+        <div id="gameover-record-banner" class="record-banner pulse hidden">🔥 NEW RECORD! 🔥</div>
+        <h2 class="danger-title">GAME OVER</h2>
+        
+        <div class="medal-avatar-holder">
+          <span id="gameover-avatar">🐉</span>
+          <div class="medal" id="gameover-medal">🪨</div>
+        </div>
+
+        <div class="stats-card-end glass-hud">
+          <div class="stat-line"><span>Score:</span> <strong id="gameover-score">0</strong></div>
+          <div class="stat-line"><span>Best Score:</span> <strong id="gameover-best">0</strong></div>
+          <div class="stat-line"><span>Level Reached:</span> <strong id="gameover-level">Level 1</strong></div>
+          <div class="stat-line"><span>Coins Earned:</span> <strong id="gameover-run-coins">🪙 0</strong></div>
+        </div>
+
+        <div class="vertical-actions">
+          <button class="btn btn-big-orange" id="btn-retry">Try Again</button>
+          <button class="btn btn-secondary" onclick="Game.quitToMenu()">Main Menu</button>
+          <button class="btn btn-rewards" id="btn-watch-ad" onclick="Game.watchAdShield()">
+            🛡️ Ad: Get Free Shield
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SCREEN 8: LEADERBOARD SCREEN ================= -->
+    <div id="screen-leaderboard" class="screen hidden">
+      <div class="app-header">
+        <button class="back-btn" onclick="UI.showScreen('menu')">&larr;</button>
+        <h2>LEADERBOARDS</h2>
+      </div>
+
+      <!-- Tabs Row -->
+      <div class="tab-header glass">
+        <button class="tab-button active" onclick="Leaderboard.selectTab('global')">Global</button>
+        <button class="tab-button" onclick="Leaderboard.selectTab('weekly')">This Week</button>
+        <button class="tab-button" onclick="Leaderboard.selectTab('nearby')">Nearby</button>
+      </div>
+
+      <!-- Leaderboard Scroll Area -->
+      <div class="scroll-area flex-grow glass">
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th style="width:15%">Rank</th>
+              <th>Player</th>
+              <th style="width:25%; text-align:right">Coins</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-list">
+            <!-- Populated via Javascript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================= SCREEN 9: SHOP SCREEN ================= -->
+    <div id="screen-shop" class="screen hidden">
+      <div class="app-header">
+        <button class="back-btn" onclick="UI.showScreen('menu')">&larr;</button>
+        <h2>SHOP</h2>
+      </div>
+
+      <!-- Tabs Row -->
+      <div class="tab-header glass">
+        <button class="tab-button active" id="shop-tab-skins" onclick="UI.selectShopTab('skins')">Skins</button>
+        <button class="tab-button" id="shop-tab-powers" onclick="UI.selectShopTab('powers')">Power-ups</button>
+      </div>
+
+      <!-- Currency Indicators -->
+      <div class="shop-currency-indicator glass">
+        <span>🪙 <span id="shop-coins">0</span></span>
+        <span>💎 <span id="shop-gems">0</span></span>
+      </div>
+
+      <!-- Shop Shelf Area -->
+      <div class="scroll-area flex-grow glass" id="shop-shelf">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+
+    <!-- ================= SCREEN 10: ACHIEVEMENTS SCREEN ================= -->
+    <div id="screen-achievements" class="screen hidden">
+      <div class="app-header">
+        <button class="back-btn" onclick="UI.showScreen('menu')">&larr;</button>
+        <h2>ACHIEVEMENTS</h2>
+      </div>
+
+      <div class="scroll-area flex-grow glass" id="achievements-list">
+        <!-- Dynmic list -->
+      </div>
+    </div>
+
+    <!-- ================= SCREEN 11: HOW TO PLAY SCREEN ================= -->
+    <div id="screen-howto" class="screen hidden">
+      <div class="app-header">
+        <button class="back-btn" onclick="UI.showScreen('menu')">&larr;</button>
+        <h2>HOW TO PLAY</h2>
+      </div>
+
+      <div class="scroll-area flex-grow glass scroll-padding">
+        <div class="tutorial-card">
+          <span class="tut-icon">🐉</span>
+          <div class="tut-info">
+            <h3>Flapping & Gravity</h3>
+            <p>Tap, click, or press <strong>Space</strong> to fly upward. Let go to fall. Balance is key to passing narrow gaps!</p>
+          </div>
+        </div>
+
+        <div class="tutorial-card">
+          <span class="tut-icon">🚧</span>
+          <div class="tut-info">
+            <h3>Columns & Gaps</h3>
+            <p>Fly through gaps in moving and wind-blown pillars. Do not hit the tubes or you will crash!</p>
+          </div>
+        </div>
+
+        <div class="tutorial-card">
+          <span class="tut-icon">⭐</span>
+          <div class="tut-info">
+            <h3>Collect Stars</h3>
+            <p>Yellow stars inside gaps give +2 standard coins. Combine them with the Magnet to auto-attracted them.</p>
+          </div>
+        </div>
+
+        <div class="tutorial-card">
+          <span class="tut-icon">🔥</span>
+          <div class="tut-info">
+            <h3>Pillar Combos</h3>
+            <p>Pass pillars consecutively to grow your Combo. At combo 3x-15x, you earn multiple points & coins per pillar!</p>
+          </div>
+        </div>
+
+        <div class="tutorial-card">
+          <span class="tut-icon">🌀</span>
+          <div class="tut-info">
+            <h3>Dynamic Wind</h3>
+            <p>At Level 6+, watch the wind banners carefully! Wind applies sideways force, dragging you left or right.</p>
+          </div>
+        </div>
+
+        <div class="tutorial-card">
+          <span class="tut-icon">☄️</span>
+          <div class="tut-info">
+            <h3>Asteroids</h3>
+            <p>At Level 9+, space asteroids will spawn between barriers and drift toward you. Fly or boost to dodge!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dev Button (floating in top right) -->
+    <button id="dev-menu-btn" onclick="Game.toggleDevMenu()">🛠️ DEV</button>
+
+    <!-- ================= MODERN MATERIAL 3 DEV TOOLS MODAL ================= -->
+    <div id="modal-dev" class="modal-overlay hidden">
+      <div class="modal-box glass" style="max-width: 320px; text-align: left; background: rgba(12, 10, 24, 0.95); border: 2px solid #5d44f8; padding: 18px; border-radius: 12px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.85); box-sizing: border-box; z-index: 200;">
+        <h2 style="color: #a5b4fc; margin-top: 0; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 1.25rem; font-family: sans-serif;">
+          <span>🛠️ Dev Sandbox</span>
+          <button class="close-btn" onclick="Game.toggleDevMenu()" style="background: none; border: none; color: #ef4444; font-size: 1.6rem; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
+        </h2>
+        
+        <div style="font-size: 0.8rem; color: #a5b4fc; margin-bottom: 12px; line-height: 1.35; font-family: sans-serif;">
+          Test scaling physics and auto-simulate runs up to Level 1,000 instantly!
+        </div>
+
+        <div class="scroll-area" style="max-height: 380px; overflow-y: auto; padding-right: 4px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;">
+          <!-- Level selector -->
+          <div style="margin-bottom: 2px;">
+            <label style="display: block; font-weight: bold; color: #fff; font-size: 0.75rem; margin-bottom: 6px; font-family: sans-serif; letter-spacing: 0.5px;">🎯 JUMP TO LEVEL (1-1000)</label>
+            <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 6px;">
+              <input type="number" id="dev-level-input" min="1" max="1000" value="1" style="width: 70px; background: rgba(255,255,255,0.08); border: 1px solid #4f46e5; border-radius: 6px; color: #fff; padding: 6px; text-align: center; font-size: 0.85rem; height: 32px; box-sizing: border-box; outline: none;">
+              <button onclick="Game.devSetLevel(document.getElementById('dev-level-input').value)" class="btn" style="padding: 0 12px; font-size: 0.75rem; background: #4f46e5; border: none; color: #fff; border-radius: 6px; cursor: pointer; flex-grow: 1; height: 32px; font-weight: bold;">SET LEVEL</button>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;">
+              <button onclick="Game.devSetLevel(1)" style="font-size: 0.7rem; padding: 6px 0; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: #fff; cursor: pointer;">L1</button>
+              <button onclick="Game.devSetLevel(10)" style="font-size: 0.7rem; padding: 6px 0; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: #fff; cursor: pointer;">L10</button>
+              <button onclick="Game.devSetLevel(100)" style="font-size: 0.7rem; padding: 6px 0; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: #fff; cursor: pointer;">L100</button>
+              <button onclick="Game.devSetLevel(500)" style="font-size: 0.7rem; padding: 6px 0; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: #fff; cursor: pointer;">L500</button>
+              <button onclick="Game.devSetLevel(1000)" style="font-size: 0.7rem; padding: 6px 0; background: #5d44f8; border: 1px solid #a5b4fc; border-radius: 4px; color: #fff; cursor: pointer; font-weight: bold; box-shadow: 0 0 6px rgba(93, 68, 248, 0.6);">L1000</button>
+            </div>
+          </div>
+
+          <!-- Cheat sliders and toggles -->
+          <div style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 10px;">
+            <label style="display: block; font-weight: bold; color: #fff; font-size: 0.75rem; margin-bottom: 8px; font-family: sans-serif; letter-spacing: 0.5px;">🔥 SYSTEM CHEATS</label>
+            
+            <!-- God Mode Toggle -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; background: rgba(255,255,255,0.06); padding: 6px 10px; border-radius: 6px;">
+              <span style="font-size: 0.8rem; color: #fff; font-family: sans-serif;">🛡️ God Mode (Immune)</span>
+              <label class="switch">
+                <input type="checkbox" id="dev-god-toggle" onchange="Game.toggleGodMode(this.checked)">
+                <span class="slider-toggle"></span>
+              </label>
+            </div>
+
+            <!-- Autoplay Toggle -->
+            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 6px 10px; border-radius: 6px;">
+              <span style="font-size: 0.8rem; color: #fff; font-family: sans-serif;">🤖 AI Autoplay (Self-Play)</span>
+              <label class="switch">
+                <input type="checkbox" id="dev-auto-toggle" onchange="Game.toggleAutoplay(this.checked)">
+                <span class="slider-toggle"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Resource generator -->
+          <div style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 10px;">
+            <label style="display: block; font-weight: bold; color: #fff; font-size: 0.75rem; margin-bottom: 6px; font-family: sans-serif; letter-spacing: 0.5px;">💰 ADD RESOURCES</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+              <button onclick="Game.devAddCoins(10000)" style="padding: 8px; font-size: 0.75rem; color: #ffb703; border: 1.5px solid rgba(255, 183, 3, 0.35); background: rgba(255, 183, 3, 0.08); border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase;">+10,000 Gold</button>
+              <button onclick="Game.devAddGems(100)" style="padding: 8px; font-size: 0.75rem; color: #02a9ff; border: 1.5px solid rgba(2, 169, 255, 0.35); background: rgba(2, 169, 255, 0.08); border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase;">+100 Gems</button>
+            </div>
+          </div>
+
+          <!-- Shortcuts -->
+          <div style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 10px;">
+            <label style="display: block; font-weight: bold; color: #fff; font-size: 0.75rem; margin-bottom: 6px; font-family: sans-serif; letter-spacing: 0.5px;">🎯 SIMULATION</label>
+            <button onclick="Game.devCompleteLevel()" style="width: 100%; padding: 8px; font-size: 0.75rem; background: #10b981; border: none; color: #fff; border-radius: 6px; cursor: pointer; text-transform: uppercase; font-weight: bold; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">⚡ Instant Level Win</button>
+          </div>
+
+          <!-- Loaded spec info -->
+          <div style="background: rgba(0,0,0,0.4); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);">
+            <div style="font-weight: bold; font-size: 0.7rem; color: #818cf8; margin-bottom: 6px; text-transform: uppercase; font-family: sans-serif; letter-spacing: 0.5px;">Physics Metrics</div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 12px; font-size: 0.7rem; color: #cbd5e1; font-family: monospace; line-height: 1.2;">
+              <div>Clearance: <span id="dev-spec-gap" style="color: #10b981;">-</span></div>
+              <div>Scroll Spd: <span id="dev-spec-speed" style="color: #10b981;">-</span></div>
+              <div>Gravity: <span id="dev-spec-grav" style="color: #e11d48;">-</span></div>
+              <div>Flap Force: <span id="dev-spec-jump" style="color: #2563eb;">-</span></div>
+              <div>Interval: <span id="dev-spec-dist" style="color: #d97706;">-</span></div>
+              <div>Req. Pipes: <span id="dev-spec-pipes" style="color: #a855f7;">-</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('ServiceWorker registered with scope:', reg.scope))
+          .catch(err => console.error('ServiceWorker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
